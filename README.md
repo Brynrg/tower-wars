@@ -36,3 +36,8 @@ Open http://localhost:8080
   - Frost Obelisk (slow control, permafrost aura, ice-lance freeze window)
 
 No build step or bundler required (`index.html`, `styles.css`, `game.js`).
+
+## Guardrails
+
+- Use `/Users/jonathangarnett/Documents/New project/tower-wars-tmp/repo/REGRESSION_CHECKLIST.md` before pushing UI or gameplay updates.
+- Startup guardrails in `/Users/jonathangarnett/Documents/New project/tower-wars-tmp/repo/game.js` validate required DOM hooks and core speed/save assumptions at boot.
