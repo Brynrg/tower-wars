@@ -47,9 +47,9 @@
         <section class="section-card minimap-card">
           <h2>Minimap</h2>
           <div class="minimap-shell" aria-label="Minimap shell">
-            <div class="minimap-grid" aria-hidden="true"></div>
+            <canvas id="miniMap" width="220" height="170" aria-label="Minimap"></canvas>
           </div>
-          <p class="mini-copy">Phase 2 shell: lane/camera preview panel.</p>
+          <p class="mini-copy">Click minimap to center camera.</p>
         </section>
 
         <section class="section-card quick-card">
@@ -64,6 +64,24 @@
           <p>Controls: <code>Space</code> wave, <code>T</code> speed, <code>P</code> pause, <code>M</code> mode.</p>
         </section>
 
+        <section id="duelBoardCard" class="section-card hidden">
+          <h2>Duel Board</h2>
+          <table class="duel-board">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Lives</th>
+                <th>Income</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody id="duelBoardBody">
+              <tr><td>P1</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td>P2</td><td>0</td><td>0</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </section>
+
         <section class="persist section-card">
           <h2>Save</h2>
           <div class="row2">
@@ -76,7 +94,7 @@
 
         <section class="tip section-card">
           <h2>Tooltip</h2>
-          <p id="tooltipBox">Hover buttons, towers, and enemies for detail. Scroll pans, ctrl/cmd + wheel zooms.</p>
+          <p id="tooltipBox">Hover buttons, towers, and enemies for detail. Wheel zooms, Shift+Wheel pans horizontally.</p>
         </section>
 
         <section class="help section-card">
@@ -91,9 +109,15 @@
 
       <aside class="panel">
         <h1>Command Card</h1>
+        <div class="command-tabs">
+          <button class="command-tab active" data-command-tab="build">Build</button>
+          <button class="command-tab" data-command-tab="wave">Wave</button>
+          <button class="command-tab" data-command-tab="selection">Select</button>
+          <button class="command-tab" data-command-tab="send">Send</button>
+        </div>
 
         <div class="command-grid command-card-grid">
-          <section class="shop section-card span-2">
+          <section class="shop section-card span-2 command-panel" data-command-panel="build">
             <h2>Build</h2>
             <div class="tower-grid">
               <button
@@ -169,7 +193,7 @@
             </div>
           </section>
 
-          <section class="actions section-card span-2">
+          <section class="actions section-card span-2 command-panel" data-command-panel="wave">
             <h2>Wave</h2>
             <div class="row2 row-wave">
               <button id="startWave" data-icon="NW">Start / Next</button>
@@ -185,10 +209,14 @@
             <p id="waveStatus">Build towers and send wave 1.</p>
           </section>
 
-          <section class="selection section-card span-2">
+          <section class="selection section-card span-2 command-panel" data-command-panel="selection">
             <h2>Selection</h2>
             <p id="selectionNone">No tower selected.</p>
             <div id="selectionDetails" class="hidden">
+              <div class="selection-hero">
+                <p id="selTitle">Tower</p>
+                <p id="selSub">Role and element</p>
+              </div>
               <div class="kv-grid">
                 <p><span>Type:</span> <strong id="selType">-</strong></p>
                 <p><span>Level:</span> <strong id="selLevel">-</strong></p>
@@ -210,7 +238,7 @@
             </div>
           </section>
 
-          <section class="send section-card span-2">
+          <section class="send section-card span-2 command-panel" data-command-panel="send">
             <h2>Send (Next Wave)</h2>
             <p class="send-copy">Spend gold to add extra creeps to the next wave. Each send increases Income.</p>
             <div id="duelPlayerSwitch" class="row2 row-mode hidden">

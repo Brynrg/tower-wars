@@ -217,14 +217,14 @@ canvas {
   padding: 0.24rem;
 }
 
-.minimap-grid {
+#miniMap {
   width: 100%;
   height: 100%;
+  display: block;
   border-radius: 4px;
-  background:
-    linear-gradient(90deg, rgba(120, 174, 90, 0.22) 1px, transparent 1px) 0 0 / 14px 14px,
-    linear-gradient(rgba(120, 174, 90, 0.22) 1px, transparent 1px) 0 0 / 14px 14px,
-    radial-gradient(circle at 30% 40%, rgba(75, 129, 58, 0.65), rgba(32, 60, 28, 0.88));
+  border: 1px solid rgba(170, 201, 127, 0.35);
+  background: radial-gradient(circle at 30% 40%, rgba(75, 129, 58, 0.65), rgba(32, 60, 28, 0.88));
+  cursor: crosshair;
 }
 
 .mini-copy {
@@ -259,6 +259,30 @@ canvas {
   font-size: 0.74rem;
 }
 
+.duel-board {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.62rem;
+}
+
+.duel-board th,
+.duel-board td {
+  border: 1px solid rgba(170, 199, 126, 0.25);
+  padding: 0.14rem 0.22rem;
+  text-align: center;
+}
+
+.duel-board th {
+  color: var(--subtle);
+  font-weight: 700;
+  background: rgba(10, 19, 9, 0.45);
+}
+
+.duel-board td:first-child {
+  color: var(--gold);
+  font-weight: 700;
+}
+
 .tower-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -268,6 +292,25 @@ canvas {
 .panel .tower-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.22rem;
+}
+
+.command-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.2rem;
+  margin-bottom: 0.24rem;
+}
+
+.command-tab {
+  text-align: center;
+  font-size: 0.66rem;
+  padding: 0.18rem 0.2rem;
+  min-height: 1.9rem;
+}
+
+.command-tab.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px rgba(225, 197, 110, 0.4);
 }
 
 .tower-btn,
@@ -345,6 +388,27 @@ canvas {
 
 .panel .tower-btn {
   min-height: 3.2rem;
+}
+
+.selection-hero {
+  margin-bottom: 0.2rem;
+  border: 1px solid rgba(176, 206, 132, 0.32);
+  border-radius: 6px;
+  background: rgba(9, 17, 8, 0.35);
+  padding: 0.2rem 0.26rem;
+}
+
+#selTitle {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+#selSub {
+  margin: 0.04rem 0 0;
+  color: var(--subtle);
+  font-size: 0.6rem;
 }
 
 button > * {
