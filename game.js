@@ -20,6 +20,10 @@ const menuOverlayEl = document.getElementById("menuOverlay");
 const menuResumeBtn = document.getElementById("menuResume");
 const menuRestartBtn = document.getElementById("menuRestart");
 const menuHomeBtn = document.getElementById("menuHome");
+const quickModeEl = document.getElementById("quickMode");
+const quickStateEl = document.getElementById("quickState");
+const quickWaveTagEl = document.getElementById("quickWaveTag");
+const quickSendsEl = document.getElementById("quickSends");
 
 const startWaveBtn = document.getElementById("startWave");
 const pauseGameBtn = document.getElementById("pauseGame");
@@ -4172,6 +4176,29 @@ function syncUi() {
   }
   if (menuBtn) {
     menuBtn.classList.toggle("active", game.menuOpen);
+  }
+  if (quickModeEl) {
+    const modeLabel = game.mode === "maze" ? "Maze" : game.mode === "duel" ? "Duel" : "Classic";
+    quickModeEl.textContent = modeLabel;
+  }
+  if (quickStateEl) {
+    let stateLabel = "Build";
+    if (game.gameOver) {
+      stateLabel = game.duelMode ? "Match End" : "Defeat";
+    } else if (game.menuOpen || game.paused) {
+      stateLabel = "Paused";
+    } else if (game.waveActive) {
+      stateLabel = "Combat";
+    }
+    quickStateEl.textContent = stateLabel;
+  }
+  if (quickWaveTagEl) {
+    quickWaveTagEl.textContent = game.waveTag || "-";
+  }
+  if (quickSendsEl) {
+    const queueState = game.duelMode ? getActivePlayerState() : game;
+    const queued = Array.isArray(queueState.sendQueue) ? queueState.sendQueue.length : 0;
+    quickSendsEl.textContent = String(queued);
   }
   autoWaveBtn.textContent = game.autoWaveEnabled ? "Auto: On (A)" : "Auto: Off (A)";
   modeClassicBtn.classList.toggle("active", game.mode === "classic");
