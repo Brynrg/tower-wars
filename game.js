@@ -290,12 +290,15 @@ const DIR4 = [
   [-1, 0],
   [0, -1],
 ];
-const FIT_ZOOM = Math.max(canvas.width / WIDTH, canvas.height / HEIGHT);
+function getFitZoom() {
+  return Math.max(canvas.width / WIDTH, canvas.height / HEIGHT);
+}
+
 const camera = {
   x: WIDTH / 2,
   y: HEIGHT / 2,
-  zoom: FIT_ZOOM,
-  minZoom: FIT_ZOOM,
+  zoom: getFitZoom(),
+  minZoom: getFitZoom(),
   maxZoom: 2,
 };
 const keyState = {
@@ -2273,6 +2276,21 @@ function getScreenPos(event) {
   };
 }
 
+function resizeCanvasToViewport() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const nextWidth = Math.max(320, Math.round(rect.width * dpr));
+  const nextHeight = Math.max(240, Math.round(rect.height * dpr));
+  if (canvas.width === nextWidth && canvas.height === nextHeight) {
+    return;
+  }
+  canvas.width = nextWidth;
+  canvas.height = nextHeight;
+  camera.minZoom = getFitZoom();
+  camera.zoom = clamp(camera.zoom, camera.minZoom, camera.maxZoom);
+  clampCamera();
+}
+
 function getTowerAtCell(cx, cy) {
   return towers.find((tower) => Math.floor(tower.x / TILE) === cx && Math.floor(tower.y / TILE) === cy) || null;
 }
@@ -3249,7 +3267,7 @@ function resetRun(options = {}) {
   syncLegacyEconomyFromActive();
   camera.x = WIDTH / 2;
   camera.y = HEIGHT / 2;
-  camera.zoom = FIT_ZOOM;
+  camera.zoom = getFitZoom();
   clampCamera();
   if (menuOverlayEl) {
     menuOverlayEl.classList.add("hidden");
@@ -4781,6 +4799,9 @@ function bindEvents() {
   window.addEventListener("pointerdown", () => {
     ensureAudioActive();
   });
+  window.addEventListener("resize", () => {
+    resizeCanvasToViewport();
+  });
   window.addEventListener("mouseup", handleCanvasMouseUp);
   window.addEventListener("blur", () => {
     handleCanvasMouseUp();
@@ -4807,6 +4828,7 @@ function bindEvents() {
 }
 
 function boot() {
+  resizeCanvasToViewport();
   runStartupGuardrails();
   bindEvents();
   clampCamera();
