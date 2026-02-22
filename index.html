@@ -92,13 +92,14 @@
       <aside class="panel">
         <h1>Command Card</h1>
 
-        <div class="command-grid">
+        <div class="command-grid command-card-grid">
           <section class="shop section-card span-2">
             <h2>Build</h2>
             <div class="tower-grid">
               <button
                 class="tower-btn"
                 data-type="arrow"
+                data-icon="AR"
                 data-tip="Arrow Tower: Piercing damage, strong vs Light, can hit Air."
               >
                 <strong>Arrow (1)</strong>
@@ -108,6 +109,7 @@
               <button
                 class="tower-btn"
                 data-type="frost"
+                data-icon="FR"
                 data-tip="Frost Tower: Magic damage, slows enemies, can hit Air, weak vs Spell Immune."
               >
                 <strong>Frost (2)</strong>
@@ -117,6 +119,7 @@
               <button
                 class="tower-btn"
                 data-type="cannon"
+                data-icon="CN"
                 data-tip="Cannon Tower: Siege splash, best vs Fortified, cannot hit Air unless Flak branch."
               >
                 <strong>Cannon (3)</strong>
@@ -126,6 +129,7 @@
               <button
                 class="tower-btn"
                 data-type="arcane"
+                data-icon="AC"
                 data-tip="Arcane Tower: Spell damage, excels at burst and control, can hit Air."
               >
                 <strong>Arcane (4)</strong>
@@ -135,6 +139,7 @@
               <button
                 class="tower-btn"
                 data-type="venom"
+                data-icon="VN"
                 data-tip="Venom Tower: Poison magic and control, branch can gain anti-air."
               >
                 <strong>Venom (5)</strong>
@@ -144,6 +149,7 @@
               <button
                 class="tower-btn"
                 data-type="mortar"
+                data-icon="MT"
                 data-tip="Fire Mortar: Siege splash with Burn. Branches into Shrapnel or Incendiary fire patch."
               >
                 <strong>Mortar (0)</strong>
@@ -153,6 +159,7 @@
               <button
                 class="tower-btn"
                 data-type="obelisk"
+                data-icon="OB"
                 data-tip="Frost Obelisk: Control magic with strong slow branches."
               >
                 <strong>Obelisk (-)</strong>
@@ -165,15 +172,15 @@
           <section class="actions section-card span-2">
             <h2>Wave</h2>
             <div class="row2 row-wave">
-              <button id="startWave">Start / Next</button>
-              <button id="pauseGame">Pause (P)</button>
-              <button id="speedGame">Speed (T)</button>
-              <button id="autoWave">Auto: On (A)</button>
+              <button id="startWave" data-icon="NW">Start / Next</button>
+              <button id="pauseGame" data-icon="PA">Pause (P)</button>
+              <button id="speedGame" data-icon="SP">Speed (T)</button>
+              <button id="autoWave" data-icon="AU">Auto: On (A)</button>
             </div>
             <div class="row2 row-mode">
-              <button id="modeClassic">Mode: Classic</button>
-              <button id="modeMaze">Mode: Maze</button>
-              <button id="modeDuel">Mode: Duel</button>
+              <button id="modeClassic" data-icon="CL">Mode: Classic</button>
+              <button id="modeMaze" data-icon="MZ">Mode: Maze</button>
+              <button id="modeDuel" data-icon="DU">Mode: Duel</button>
             </div>
             <p id="waveStatus">Build towers and send wave 1.</p>
           </section>
@@ -193,12 +200,12 @@
                 <p><span>Aura:</span> <strong id="selAura">None</strong></p>
               </div>
               <div class="row2 row2-tower">
-                <button id="upgradeTower">Upgrade (U)</button>
-                <button id="castAbility">Ability (F)</button>
+                <button id="upgradeTower" data-icon="UP">Upgrade (U)</button>
+                <button id="castAbility" data-icon="AB">Ability (F)</button>
               </div>
               <div id="branchControls" class="hidden row2 row2-tower">
-                <button id="branchA">Branch A</button>
-                <button id="branchB">Branch B</button>
+                <button id="branchA" data-icon="A">Branch A</button>
+                <button id="branchB" data-icon="B">Branch B</button>
               </div>
             </div>
           </section>
@@ -207,20 +214,20 @@
             <h2>Send (Next Wave)</h2>
             <p class="send-copy">Spend gold to add extra creeps to the next wave. Each send increases Income.</p>
             <div id="duelPlayerSwitch" class="row2 row-mode hidden">
-              <button id="duelP1Btn">Active: P1</button>
-              <button id="duelP2Btn">Active: P2</button>
+              <button id="duelP1Btn" data-icon="P1">Active: P1</button>
+              <button id="duelP2Btn" data-icon="P2">Active: P2</button>
             </div>
             <div class="send-grid">
-              <button id="sendRunner" title="Runner Pack: 6 fast light creeps. Cost 60, Income +1">Runner Pack<br /><small>60g | +1 Income</small></button>
-              <button id="sendArmor" title="Armor Column: 4 heavy creeps. Cost 90, Income +1">Armor Column<br /><small>90g | +1 Income</small></button>
-              <button id="sendAir" title="Air Squad: 4 flying creeps. Cost 110, Income +2">Air Squad<br /><small>110g | +2 Income</small></button>
-              <button id="sendBreaker" title="Spellbreaker: 1 magic immune heavy creep. Cost 140, Income +2">Spellbreaker<br /><small>140g | +2 Income</small></button>
-              <button id="sendSplitter" title="Splitter Nest: 2 splitting creeps. Cost 160, Income +2">Splitter Nest<br /><small>160g | +2 Income</small></button>
-              <button id="sendMiniBoss" title="Mini-Boss: 1 powerful creep. Cost 220, Income +3">Mini-Boss<br /><small>220g | +3 Income</small></button>
+              <button id="sendRunner" data-icon="RN" title="Runner Pack: 6 fast light creeps. Cost 60, Income +1">Runner Pack<br /><small>60g | +1 Income</small></button>
+              <button id="sendArmor" data-icon="AR" title="Armor Column: 4 heavy creeps. Cost 90, Income +1">Armor Column<br /><small>90g | +1 Income</small></button>
+              <button id="sendAir" data-icon="AI" title="Air Squad: 4 flying creeps. Cost 110, Income +2">Air Squad<br /><small>110g | +2 Income</small></button>
+              <button id="sendBreaker" data-icon="SB" title="Spellbreaker: 1 magic immune heavy creep. Cost 140, Income +2">Spellbreaker<br /><small>140g | +2 Income</small></button>
+              <button id="sendSplitter" data-icon="SP" title="Splitter Nest: 2 splitting creeps. Cost 160, Income +2">Splitter Nest<br /><small>160g | +2 Income</small></button>
+              <button id="sendMiniBoss" data-icon="MB" title="Mini-Boss: 1 powerful creep. Cost 220, Income +3">Mini-Boss<br /><small>220g | +3 Income</small></button>
             </div>
             <div class="send-foot">
               <div id="sendQueue">No sends queued.</div>
-              <button id="clearSends">Clear Queue</button>
+              <button id="clearSends" data-icon="CL">Clear Queue</button>
             </div>
           </section>
         </div>
