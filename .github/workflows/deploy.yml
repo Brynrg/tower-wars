@@ -1,0 +1,24 @@
+name: Deploy to speedrungames.net
+
+# Auto-deploys to the portal on every push to main via the portal's reusable
+# workflow (canonical ingest -> auto-merging portal PR). Never hand-copy build
+# output into the portal.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    uses: Brynrg/speedrungames/.github/workflows/deploy-game.yml@main
+    with:
+      slug: tower-wars
+      build-command: npm run build
+      dist-dir: dist
+      status: live
+    secrets:
+      SPEEDRUNGAMES_TOKEN: ${{ secrets.SPEEDRUNGAMES_TOKEN }}
