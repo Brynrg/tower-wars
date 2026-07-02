@@ -86,14 +86,19 @@ export function syncLayoutOffsets() {
     root.setProperty("--panel-top", `${bottom}px`);
     root.setProperty("--board-top", `${bottom}px`);
   }
+  const right = document.querySelector(".panel");
   if (window.matchMedia("(max-width: 920px)").matches) {
-    // Mobile: panels are bottom-anchored; the board takes the full width.
+    // Mobile: full-width board on top, the command card is a bottom sheet.
     root.setProperty("--board-left", "0px");
     root.setProperty("--board-right", "0px");
+    if (right) {
+      const sheetTop = right.getBoundingClientRect().top;
+      root.setProperty("--board-bottom", `${Math.max(0, Math.ceil(window.innerHeight - sheetTop + 6))}px`);
+    }
     return;
   }
+  root.setProperty("--board-bottom", "0px");
   const left = document.querySelector(".utility-panel");
-  const right = document.querySelector(".panel");
   if (left) {
     root.setProperty("--board-left", `${Math.ceil(left.getBoundingClientRect().right + 8)}px`);
   }

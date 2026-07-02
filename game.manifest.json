@@ -4,9 +4,9 @@
   "description": "Maze tower defense with income/sends, hero towers, and large-map pan/zoom control.",
   "framework": "vanilla",
   "category": "tower-defense",
-  "supportsMobile": false,
-  "version": "1.0.0",
-  "emoji": "🛡️",
+  "supportsMobile": true,
+  "version": "1.1.0",
+  "emoji": "\ud83d\udee1\ufe0f",
   "entry": "index.html",
   "repo": "Brynrg/tower-wars"
 }

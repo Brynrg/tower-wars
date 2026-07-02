@@ -768,22 +768,28 @@ code {
     top: 0.4rem;
   }
 
-  .utility-panel,
-  .panel {
-    width: calc(100vw - 0.8rem);
-    left: 0.4rem;
-    right: 0.4rem;
-    max-height: 34vh;
-  }
-
+  /* Mobile: board on top (full width), command card as a bottom sheet. The
+     utility panel (minimap/save/tips) is desktop-only chrome. */
   .utility-panel {
-    top: auto;
-    bottom: 35.8vh;
+    display: none;
   }
 
   .panel {
     top: auto;
-    bottom: 0.4rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-height: 38vh;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 0;
+  }
+
+  .panel.collapsed {
+    width: 100vw;
+    max-height: none;
+    height: 2.1rem;
+    padding: 0.3rem 0.2rem;
   }
 
   .row2,

@@ -14,6 +14,7 @@ import { clearSendQueue, queueSend } from "./sends.js";
 import { game } from "./state.js";
 import { status } from "./status.js";
 import { defaultTooltip, getButtonTooltip, setCommandTab, setTooltip } from "./tooltip.js";
+import { bindTouchInput } from "./touch.js";
 import { TOWER_DATA } from "./towers.js";
 import { syncUi } from "./ui-sync.js";
 
@@ -32,6 +33,7 @@ export function bindEvents() {
     setTooltip(defaultTooltip());
   });
   canvas.addEventListener("click", handleBoardClick);
+  bindTouchInput();
   if (miniMapEl) {
     miniMapEl.addEventListener("pointerdown", handleMiniMapPointer);
   }
