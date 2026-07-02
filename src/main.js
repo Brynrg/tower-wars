@@ -2,7 +2,7 @@ import { ensureAudioActive } from "./audio.js";
 import { castSelectedAbility, chooseBranch, sellSelectedTower, setSelectedType, tryUpgradeSelectedTower } from "./build.js";
 import { clampCamera, keyState, resizeCanvasToViewport } from "./camera.js";
 import { HOME_URL } from "./constants.js";
-import { autoWaveBtn, branchAButton, branchBButton, canvas, castAbilityBtn, clearSendsBtn, commandTabButtons, duelP1Btn, duelP2Btn, loadRunBtn, menuBtn, menuHomeBtn, menuOverlayEl, menuRestartBtn, menuResumeBtn, miniMapEl, modeClassicBtn, modeDuelBtn, modeMazeBtn, newRunBtn, nextWaveBtn, pauseGameBtn, saveRunBtn, sendAirBtn, sendArmorBtn, sendBreakerBtn, sendMiniBossBtn, sendRunnerBtn, sendSplitterBtn, speedBtn, speedGameBtn, startWaveBtn, towerButtons, upgradeTowerBtn, sellTowerBtn, defeatNewRunBtn, defeatLoadRunBtn, defeatHomeBtn } from "./dom.js";
+import { autoWaveBtn, branchAButton, branchBButton, canvas, castAbilityBtn, clearSendsBtn, commandTabButtons, duelP1Btn, duelP2Btn, loadRunBtn, menuBtn, menuHomeBtn, menuOverlayEl, menuRestartBtn, menuResumeBtn, miniMapEl, modeClassicBtn, modeDuelBtn, modeMazeBtn, newRunBtn, nextWaveBtn, pauseGameBtn, saveRunBtn, sendAirBtn, sendArmorBtn, sendBreakerBtn, sendMiniBossBtn, sendRunnerBtn, sendSplitterBtn, speedBtn, speedGameBtn, startWaveBtn, towerButtons, upgradeTowerBtn, sellTowerBtn, defeatNewRunBtn, defeatLoadRunBtn, defeatHomeBtn, collapseLeftBtn, collapseRightBtn } from "./dom.js";
 import { runStartupGuardrails } from "./guardrails.js";
 import { handleBoardClick, handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasMove, handleCanvasWheel } from "./input.js";
 import { closeMenu, cycleSpeed, openMenu, restartRun, setActivePlayer, setGameMode, startWave, toggleAutoWave, togglePause } from "./lifecycle.js";
@@ -211,6 +211,19 @@ export function bindEvents() {
       window.location.href = HOME_URL;
     });
   }
+  const bindCollapse = (btn, expandGlyph, collapseGlyph) => {
+    if (!btn) {
+      return;
+    }
+    btn.addEventListener("click", () => {
+      const panel = btn.parentElement;
+      const collapsed = panel.classList.toggle("collapsed");
+      btn.innerHTML = collapsed ? expandGlyph : collapseGlyph;
+      resizeCanvasToViewport();
+    });
+  };
+  bindCollapse(collapseLeftBtn, "&#10095;", "&#10094;");
+  bindCollapse(collapseRightBtn, "&#10094;", "&#10095;");
 
   for (const button of towerButtons) {
     button.addEventListener("click", () => {
