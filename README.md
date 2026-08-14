@@ -35,9 +35,14 @@ Open http://localhost:8080
   - Fire Mortar (burn, splash, incendiary patch)
   - Frost Obelisk (slow control, permafrost aura, ice-lance freeze window)
 
-No build step or bundler required (`index.html`, `styles.css`, `game.js`).
+## Code layout
+
+No bundler — `index.html` loads native ES modules directly via `<script type="module" src="./src/main.js">`. The former 5,119-line monolithic `game.js` was split into 36 modules under `src/` (one concern per file: `state.js`, `towers.js`, `enemies.js`, `waves.js`, `render.js`, `save.js`, …) by `tools/split-codemod.mjs`; the monolith itself is deleted. `npm run build` (`build.mjs`) just stages the static files into `dist/` for the portal.
 
 ## Guardrails
 
-- Use `/Users/jonathangarnett/Documents/New project/tower-wars-tmp/repo/REGRESSION_CHECKLIST.md` before pushing UI or gameplay updates.
-- Startup guardrails in `/Users/jonathangarnett/Documents/New project/tower-wars-tmp/repo/game.js` validate required DOM hooks and core speed/save assumptions at boot.
+- Run the `REGRESSION_CHECKLIST.md` manual QA pass before pushing UI or gameplay updates.
+- Run `npm test` — the golden suite (`test/golden-suite.mjs`, executed against the `src/` modules by `test/golden.modules.spec.mjs`) pins damage math, economy, and wave-plan behavior.
+- Startup guardrails in `src/guardrails.js` validate required DOM hooks and core speed/save assumptions at boot.
+
+This repo is the canonical source; the `Brynrg/speedrungames` umbrella carries a downstream drop — never edit the game there.

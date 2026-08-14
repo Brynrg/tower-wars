@@ -63,15 +63,13 @@
 - [ ] `git ls-files src/` lists 25+ small files (none over 400 lines).
 - [ ] No `eval`, no inline `<script>` in `index.html` other than the existing `window.SPEEDRUN_HOME_URL` hook.
 
-### Task 2: Replace hardcoded `/Users/jonathangarnett/...` paths in README
+### Task 2: Replace hardcoded absolute paths in README — ✅ DONE 2026-08-14
 **Effort:** S
 **Files:** `README.md`
 **What:** Two absolute paths in the Guardrails section won't resolve for anyone but the original author.
-**Why:** `README.md:42-43` references `/Users/jonathangarnett/Documents/New project/tower-wars-tmp/repo/REGRESSION_CHECKLIST.md` and `.../game.js`. AI agents and other contributors land here and immediately hit a broken trail.
+**Why:** `README.md:42-43` referenced a stale absolute path to a long-gone temp checkout for `REGRESSION_CHECKLIST.md` and `game.js`. AI agents and other contributors land here and immediately hit a broken trail.
 **Steps:**
-1. Open `README.md`. Replace:
-   - `/Users/jonathangarnett/Documents/New project/tower-wars-tmp/repo/REGRESSION_CHECKLIST.md` → `REGRESSION_CHECKLIST.md` (relative).
-   - `/Users/jonathangarnett/Documents/New project/tower-wars-tmp/repo/game.js` → `game.js` (relative).
+1. Open `README.md`. Replace both absolute paths with repo-relative ones (`REGRESSION_CHECKLIST.md`, and the guardrails now live in `src/guardrails.js`).
 2. Reword the surrounding sentences so the relative paths read naturally: "Run `REGRESSION_CHECKLIST.md` checks before pushing UI or gameplay updates." and "Startup guardrails in `game.js` validate required DOM hooks and core speed/save assumptions at boot."
 3. While you're in there, mention that this is the canonical source and the umbrella has a downstream drop.
 
