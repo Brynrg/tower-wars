@@ -1,10 +1,14 @@
 # Improvement Plan
 
 > Executable backlog for `Brynrg/tower-wars`. Work top-to-bottom.
+>
+> **Status sweep 2026-08-14** — plan executed. Done: 1, 2, 3, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20 (partial: aria-live shipped; focus trap + contrast audit still open).
+> Superseded: 4 (game.manifest.json + the portal-ingest deploy pipeline replaced speedrungames.json discovery, which is for externally-hosted proxied games), 6 (bespoke speedrun clock + submitRun already deliver the leaderboard; an SDK storage migration would churn the stable save keys for no user-visible gain), 7 (deploy.yml auto-deploys via the portal's reusable workflow; rsync drops are banned).
+> Deferred (P3, unstarted): 17, 18, 19, and the rest of 20. Per-task notes below.
 
 ## P0 — Blockers / safety
 
-### Task 1: Split `game.js` into ES modules
+### Task 1: Split `game.js` into ES modules — ✅ DONE (pre-2026-08-14, via tools/split-codemod.mjs)
 **Effort:** L
 **Files:** `index.html`, new `src/*.js` modules, replace existing `game.js`.
 **What:** Convert the 5,119-line single-file game into ES modules loaded via `<script type="module">`. No bundler. The goal is testability and navigability, not a build step.
@@ -79,7 +83,7 @@
 
 ## P1 — High-value
 
-### Task 3: Add CI with headless boot check
+### Task 3: Add CI with headless boot check — ✅ DONE 2026-08-14 (ci.yml: npm test + scripts/smoke-boot.mjs; smoke verified to pass clean and fail on an injected syntax error)
 **Effort:** M
 **Files:** `.github/workflows/ci.yml` (new), `scripts/smoke-boot.mjs` (new), `package.json` (new — minimal).
 **What:** GitHub Action that on PR + push-to-main: serves the static site, loads it in headless Chrome, asserts no console errors during boot + a 3-second idle window.
@@ -96,7 +100,7 @@
 - [ ] Push a clean change — CI exits 0 in under 2 minutes.
 - [ ] Badge on README reflects the actual state.
 
-### Task 4: Add `speedrungames.json` manifest
+### Task 4: Add `speedrungames.json` manifest — ⛔ SUPERSEDED (that manifest is for externally-hosted games the portal proxies; this game deploys INTO the portal via game.manifest.json + deploy.yml, which also maintains the registry entry)
 **Effort:** S
 **Files:** `speedrungames.json` (new).
 **What:** Drop a v1 manifest so the umbrella auto-discovers this game.
@@ -110,7 +114,7 @@
 - [ ] `cat speedrungames.json | jq` validates as JSON.
 - [ ] Umbrella's discovery script lists `tower-wars` from manifest, not from manual entry.
 
-### Task 5: Fix `onEnemyKilled` signature bug
+### Task 5: Fix `onEnemyKilled` signature bug — ✅ DONE (kill credit + serialize + selection panel shipped earlier)
 **Effort:** S
 **Files:** `game.js` (pre-Task-1) OR `src/combat.js` (post-Task-1).
 **What:** `dealDamageToEnemy` calls `onEnemyKilled(enemy, sourceTower)` but `onEnemyKilled(enemy)` has only one parameter. The tower is silently dropped.
@@ -124,7 +128,7 @@
 - [ ] Select a tower, kill an enemy with it; the Selection panel shows the kill count increase.
 - [ ] Selecting via `localStorage` Save → reload restores `kills` (need to add to `Tower.serialize/fromSave`).
 
-### Task 6: Migrate timer/storage to `speedrungames-sdk`
+### Task 6: Migrate timer/storage to `speedrungames-sdk` — ⛔ SUPERSEDED (bespoke sim-time speedrun clock + submitRun landed in v1.3.0; migrating storage would break the stable save keys for no user-visible gain)
 **Effort:** L
 **Files:** `package.json` (new), `src/main.js` (post-Task-1), various.
 **What:** Drop the bespoke save/highscore code and the wave-as-score model in favor of SDK's `SpeedrunTimer` + `createStorage(slug)` + `submitRun({slug, ms, splits})`.
@@ -141,7 +145,7 @@
 - [ ] The umbrella's `/leaderboards/tower-wars` shows a run after first completion.
 - [ ] Endless mode still works exactly as today, with high scores intact.
 
-### Task 7: Document and automate the umbrella drop
+### Task 7: Document and automate the umbrella drop — ⛔ SUPERSEDED (deploy.yml auto-deploys via the portal's reusable deploy-game.yml on push to main; documented in README §Releasing)
 **Effort:** S
 **Files:** `scripts/drop-to-umbrella.sh` (new), `README.md`.
 **What:** A two-line script that rsyncs the canonical files to the umbrella's `apps/web/public/games/tower-wars/` directory in a sibling checkout.
@@ -157,7 +161,7 @@
 
 ## P2 — Quality / polish
 
-### Task 8: Extract abilities into a data-driven table
+### Task 8: Extract abilities into a data-driven table — ✅ DONE 2026-08-14 (src/abilities.js ABILITIES map, bodies moved verbatim; test/abilities.spec.mjs guards coverage + cooldown contract)
 **Effort:** M
 **Files:** `src/abilities.js` (new, post-Task-1).
 **What:** Today `Tower.castAbility` is a 175-line if-chain with 10 hardcoded ability implementations (`game.js:1398-1574`). Convert each ability into an entry in an `ABILITIES` map: `{volley: { cooldown, range: 'self', targets: 'top-N', count: 6, effect: ({tower, targets}) => ... }}`.
@@ -166,7 +170,7 @@
 - [ ] Every existing ability has the same behavior (run regression checklist).
 - [ ] Adding a new ability requires adding one entry, not editing `castAbility`.
 
-### Task 9: Unit tests for damage / wave math
+### Task 9: Unit tests for damage / wave math — ✅ DONE (vitest golden suite: test/golden-suite.mjs covers the damage table, immunity paths, economy, and wave plans)
 **Effort:** M
 **Files:** `test/damage.test.mjs`, `test/waves.test.mjs`, `package.json`.
 **What:** Once the modules exist (Task 1), add tests with `node --test`. Cover the damage type × armor table, magic immunity, no-AA path, boss multiplier, leak penalty. Cover `buildWavePlan` for boss/air/splitter/assault selection.
@@ -175,7 +179,7 @@
 - [ ] `node --test test/` passes locally and in CI.
 - [ ] Tests run in < 3 seconds.
 
-### Task 10: Clear the music interval on game over
+### Task 10: Clear the music interval on game over — ✅ DONE 2026-08-14 (stopMusicLoop() on defeat; ensureAudioActive restarts it once a new run is underway)
 **Effort:** S
 **Files:** `src/audio.js` (post-Task-1) or `game.js:4577-4595` (pre-).
 **What:** `startMusicLoop` sets `audio.musicTimer = setInterval(...)` and never calls `clearInterval`. The callback returns early if `game.gameOver`, but the interval keeps firing forever.
@@ -183,7 +187,7 @@
 **Acceptance:**
 - [ ] After 10 game-over cycles, no interval leak (verify with Chrome DevTools Performance recording).
 
-### Task 11: Remove duplicate `saveRun` calls
+### Task 11: Remove duplicate `saveRun` calls — ✅ DONE 2026-08-14 (kept: 5s autosave, defeat, mode change, restart, explicit Save; removed: build/sell/sends/startWave/toggleAutoWave/wave-clear)
 **Effort:** S
 **Files:** `game.js` or split modules.
 **What:** `saveRun(false)` is called from `tryBuildTower`, `tryUpgradeSelectedTower`, `chooseBranch`, `queueSend`, `clearSendQueue`, `startWave`, the wave-clear bonus block, and the autosave timer in `update()`. Pick one: action-triggered OR autosave-on-timer, not both.
@@ -193,7 +197,7 @@
 - [ ] Build 5 towers in quick succession; reload; the last tower (built ≤ 5s before reload) may not persist — acceptable trade-off.
 - [ ] Chrome DevTools shows no `localStorage.setItem` calls in the build-tower flow.
 
-### Task 12: Wire or remove `drawTowerRankAndBranch`
+### Task 12: Wire or remove `drawTowerRankAndBranch` — ✅ DONE (wired into drawTower during the Ink & Iron pass)
 **Effort:** S
 **Files:** `src/render.js` (post-Task-1) or `game.js:3946`.
 **What:** Function is defined but `grep` shows no callers.
@@ -201,34 +205,34 @@
 
 ## P3 — Nice-to-haves
 
-### Task 13: Mobile touch + pinch-zoom
+### Task 13: Mobile touch + pinch-zoom — ✅ DONE (src/touch.js, Phase 2c)
 **Effort:** M
 **What:** Today the canvas accepts mouse + wheel. Touch devices get tap-to-build (works) but no two-finger pan or pinch zoom. Add `touchstart/move/end` handlers that mirror the mouse + wheel behavior.
 
-### Task 14: Tower upgrade tooltip on hover-while-selected
+### Task 14: Tower upgrade tooltip on hover-while-selected — ✅ DONE 2026-08-14 (Tower.upgradePreview() + dataset.tip on the Upgrade button)
 **Effort:** S
 **What:** When a tower is selected and its Upgrade button is focused, show the next level's effective damage/range/rate in the tooltip box. Today the tooltip only shows the button's static description.
 
-### Task 15: Wave preview (peek next wave's composition)
+### Task 15: Wave preview (peek next wave's composition) — ✅ DONE (Quick Info "Next Wave" + wave-preview line in ui-sync.js)
 **Effort:** M
 **What:** Between waves, show the next wave's tag + creep count + special properties (boss / air / splitter / spellbreaker injection). Currently the player has to remember `buildWavePlan`'s schedule.
 
-### Task 16: Vendor Google Fonts
+### Task 16: Vendor Google Fonts — ✅ DONE 2026-08-14 (assets/fonts/*.woff2 + styles.fonts.css; zero external requests verified)
 **Effort:** S
 **What:** `index.html:8-12` loads Cinzel + Rajdhani from `fonts.googleapis.com`. Vendor the WOFF2 files into `assets/fonts/` and reference them locally so the game works offline and isn't gated by a CDN.
 
-### Task 17: Add SOX-style audit log of moves for replay analysis
+### Task 17: Add SOX-style audit log of moves for replay analysis — ⏸ DEFERRED (L effort, speculative feature)
 **Effort:** L
 **What:** Record (timestamp, action, payload) for every player input + wave start. Persist alongside the save. Future feature: a "ghost mode" that replays your PB run on the side. Not urgent, but cheap to wire if done early.
 
-### Task 18: Difficulty toggle (Easy / Normal / Hard)
+### Task 18: Difficulty toggle (Easy / Normal / Hard) — ⏸ DEFERRED (balance-sensitive; would also fragment speedrun categories — needs an operator decision first)
 **Effort:** M
 **What:** Scale `buildWavePlan` HP/speed by 0.8 / 1.0 / 1.3. Useful for new players and for speedrun categories.
 
-### Task 19: Replace `setInterval` music loop with an audio buffer
+### Task 19: Replace `setInterval` music loop with an audio buffer — ⏸ DEFERRED (leak fixed by Task 10; buffer rewrite is polish)
 **Effort:** M
 **What:** WebAudio's `AudioBufferSourceNode` with a looping buffer is more robust than `setInterval` + oscillators. Lower CPU, glitch-free under heavy load.
 
-### Task 20: Accessibility pass
+### Task 20: Accessibility pass — 🟡 PARTIAL 2026-08-14 (aria-live="polite" on #waveStatus shipped; menu focus trap + contrast audit still open)
 **Effort:** M
 **What:** Add `aria-live="polite"` on `#waveStatus` so screen readers announce wave events. Trap focus in the menu modal. Verify color contrast on the dark theme meets WCAG AA.

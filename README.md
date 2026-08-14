@@ -1,5 +1,7 @@
 # Tower Wars (Maze TD)
 
+[![CI](https://github.com/Brynrg/tower-wars/actions/workflows/ci.yml/badge.svg)](https://github.com/Brynrg/tower-wars/actions/workflows/ci.yml)
+
 Standalone static browser tower defense inspired by Warcraft 3 Line Tower Wars / Green Circle TD.
 
 ## Run locally
@@ -42,7 +44,14 @@ No bundler — `index.html` loads native ES modules directly via `<script type="
 ## Guardrails
 
 - Run the `REGRESSION_CHECKLIST.md` manual QA pass before pushing UI or gameplay updates.
-- Run `npm test` — the golden suite (`test/golden-suite.mjs`, executed against the `src/` modules by `test/golden.modules.spec.mjs`) pins damage math, economy, and wave-plan behavior.
+- Run `npm test` — the golden suite (`test/golden-suite.mjs`, executed against the `src/` modules by `test/golden.modules.spec.mjs`) pins damage math, economy, and wave-plan behavior; `test/abilities.spec.mjs` guards the ability table.
+- Run `npm run smoke` — headless Chrome boot check (`scripts/smoke-boot.mjs`): fails on any console/page error during boot. CI runs both on every push and PR.
 - Startup guardrails in `src/guardrails.js` validate required DOM hooks and core speed/save assumptions at boot.
 
-This repo is the canonical source; the `Brynrg/speedrungames` umbrella carries a downstream drop — never edit the game there.
+## Releasing
+
+Push to `main`. CI (`ci.yml`: golden suite + headless boot smoke) and the auto-deploy
+(`deploy.yml`) both run: deploy calls the portal's reusable `deploy-game.yml` workflow
+(Brynrg/speedrungames), which builds `dist/` via `npm run build`, ingests it into the
+portal, and updates the registry. Never hand-copy build output into the portal — this
+repo is the canonical source; the umbrella carries only that generated drop.

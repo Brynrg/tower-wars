@@ -1,12 +1,12 @@
 # Completion Status
 
-> Status doc for AI agents. Updated 2026-08-14 (originally 2026-05-19; the monolith described then is gone).
+> Status doc for AI agents. Updated 2026-08-14 late (improvement plan executed; originally 2026-05-19 — the monolith described then is gone).
 
-**State:** Actively maintained — deepest gameplay in the portfolio. The 5,119-line monolithic `game.js` was split into 36 ES modules under `src/` (2026, via `tools/split-codemod.mjs`) and then deleted; the stale absolute paths in README are fixed; a vitest golden suite pins core behavior.
+**State:** Actively maintained — deepest gameplay in the portfolio. The 5,119-line monolithic `game.js` was split into ES modules under `src/` (37 today, via `tools/split-codemod.mjs`) and then deleted; a vitest golden suite pins core behavior; CI runs the suite plus a headless boot smoke on every push/PR; IMPROVEMENT_PLAN.md is fully swept (each task marked done / superseded / deferred).
 **Recent commits:** `d9af0b1` v1.4.0 per-tower targeting priorities · `98d74f9` "Ink & Iron" visual identity overhaul · `ed8432c` Phase 4 speedrun clock + leaderboard submit (v1.3.0) · `9b65a1b` readability/juice pass · `6d2026b` touch input + mobile layout.
-**Stack:** Vanilla JS ES modules (no bundler — `index.html` loads `src/main.js` natively), HTML5 Canvas 2D, WebAudio API. `package.json` with vitest + happy-dom devDependencies; `npm test` runs the golden suite; `npm run build` (`build.mjs`) stages static files into `dist/` for portal ingest. `game.manifest.json` (v1.4.0) makes the game auto-discoverable by the umbrella. Local serving: `python3 -m http.server 8080`.
+**Stack:** Vanilla JS ES modules (no bundler — `index.html` loads `src/main.js` natively), HTML5 Canvas 2D, WebAudio API. `package.json` with vitest + happy-dom devDependencies; `npm test` runs the golden suite; `npm run build` (`build.mjs`) stages static files into `dist/` for portal ingest. `game.manifest.json` (v1.4.0) is the portal-ingest deploy manifest (deploy.yml checks its slug); the separate `speedrungames.json` discovery mechanism is only for externally-hosted proxied games and deliberately unused here. Local serving: `python3 -m http.server 8080`.
 
-## Architecture — `src/` module map (36 modules, ~6,400 lines total)
+## Architecture — `src/` module map (37 modules)
 
 Entry: `index.html` → `<script type="module" src="./src/main.js">`. `main.js` runs `boot()`: resize, `runStartupGuardrails()`, `bindEvents()`, load save, start rAF. The split preserved the monolith's behavior byte-for-byte where possible (exact text copies; shared mutable `let`s re-homed to their writer modules and read via ES live bindings) — see `tools/split-codemod.mjs` for the mechanics and the original line-range table.
 
@@ -20,7 +20,8 @@ Entry: `index.html` → `<script type="module" src="./src/main.js">`. `main.js` 
 | `paths.js` | classic + duel waypoint geometry, `PATH_CELLS`, maze start/exit |
 | `camera.js` | camera state, pan/zoom math, `screenToWorld`, viewport resize |
 | `state.js` | the `game` singleton (incl. `runMs` speedrun clock), entity pools, per-player duel state, `audio` singleton |
-| `towers.js` | `TOWER_DATA` catalog (7 towers, A/B branches) + `class Tower` (stats getters, abilities, targeting) |
+| `towers.js` | `TOWER_DATA` catalog (7 towers, A/B branches) + `class Tower` (stats getters, targeting, `upgradePreview()`) |
+| `abilities.js` | data-driven `ABILITIES` table — one entry per `ability.id`; `Tower.castAbility` is a lookup |
 | `enemies.js` | `class Enemy` (slow/burn, classic/air/maze movement) |
 | `projectiles.js` | `Projectile`, `Effect`, `AreaEffect` |
 | `sends.js` | `SEND_OPTIONS`, send-queue economy (queue/refund/consume), income |
@@ -47,6 +48,9 @@ Entry: `index.html` → `<script type="module" src="./src/main.js">`. `main.js` 
 
 - `test/golden-suite.mjs` — shared golden assertions (damage model, economy, wave plans; seeded RNG). Originally pinned against the live monolith, then re-run unchanged against the modules to prove the split.
 - `test/golden.modules.spec.mjs` — runs that suite against the real `src/` modules under happy-dom (populates the DOM from `index.html` before importing, since `dom.js` grabs elements at import time).
+- `test/abilities.spec.mjs` — every `TOWER_DATA` branch ability has an `ABILITIES` entry (and vice versa) + the cast/cooldown contract.
+- `scripts/smoke-boot.mjs` (`npm run smoke`) — headless Chrome boot: fails on any page/console error during boot + a 3s idle window; asserts the `#game` canvas.
+- `.github/workflows/ci.yml` — `npm ci && npm test && npm run smoke` on push to main, PRs, and manual dispatch.
 - `REGRESSION_CHECKLIST.md` — the manual QA gate for anything the golden suite can't see (rendering, input feel, camera, duel flow).
 
 ## What works (behavior carried over from the monolith, plus post-split phases)
@@ -56,25 +60,26 @@ Entry: `index.html` → `<script type="module" src="./src/main.js">`. `main.js` 
 - Per-tower targeting priorities (First / Last / Strong / Weak) — v1.4.0.
 - Damage-type × armor matrix with magic-immune / no-AA / resist-floor handling.
 - Income economy with send queue (6 send types, refund, per-lane consumption in duel) and leak penalties.
-- Save / load / autosave with versioned keys and legacy-key migration (`constants.js`).
+- Save / load with versioned keys and legacy-key migration (`constants.js`). Save policy (2026-08-14): 5s autosave + defeat + mode change + restart + the explicit Save button — per-action saves were removed, so a reload can lose up to ~5s (deliberate trade, IMPROVEMENT_PLAN Task 11).
 - Speedrun clock (sim-time, first wave start → wave-20 clear) with leaderboard submit (`loop.js` → `leaderboard.js`).
 - Camera pan/zoom, minimap with click-to-center, touch + mobile layout (`supportsMobile: true` in the manifest).
 - WebAudio SFX + music loop; startup guardrails; menu/defeat overlays whose Return Home buttons use the `window.SPEEDRUN_HOME_URL` hook the umbrella injects via `index.html`.
 
 ## Known gaps
 
-- **No CI.** `npm test` exists but nothing runs it on push; no headless boot smoke check. The regression checklist is still manual. (`IMPROVEMENT_PLAN.md` Task 3.)
 - **Umbrella drift risk remains.** `Brynrg/speedrungames/apps/web/public/games/tower-wars/` is a downstream drop of `dist/`; edits there diverge silently. Fix here, rebuild, re-drop.
 - **Golden suite covers logic only.** Rendering, input, and audio modules have no automated coverage — that's what `REGRESSION_CHECKLIST.md` is for.
 - **No linter/formatter** despite `package.json` now existing.
+- **A11y partial:** `#waveStatus` is `aria-live`, but the menu modal still doesn't trap focus and contrast is unaudited (IMPROVEMENT_PLAN Task 20).
+- **Deferred features:** replay/audit log (17), difficulty toggle (18 — balance-sensitive, needs an operator call), AudioBuffer music loop (19).
 
 ## Notes for AI agents
 
 - **Canonical:** this repo *is* the source. Never edit the umbrella's copy.
-- **Gates before any UI/gameplay change:** `npm test` (golden suite) + the full `REGRESSION_CHECKLIST.md`. See `AGENTS.md`.
+- **Gates before any UI/gameplay change:** `npm test` + `npm run smoke` + the full `REGRESSION_CHECKLIST.md`. See `AGENTS.md`.
 - **Save keys:** `speedrungames:tower-wars:run_v2` / `speedrungames:tower-wars:highscores_v2` (`src/constants.js`) — keep stable unless intentionally version-bumping; a one-time migration from the legacy `green_circle_td_*_v2` keys runs at module init.
 - **Keep `window.SPEEDRUN_HOME_URL` intact** — the umbrella injects it and the Return Home buttons depend on it.
 - **`dom.js` grabs elements at import time** — any test or tool that imports `src/` modules must populate the DOM from `index.html` first (see `test/golden.modules.spec.mjs`).
-- **Do not** add external CDN dependencies without a fallback; the repo is self-contained except Google Fonts.
+- **Do not** add external CDN dependencies. The repo is now fully self-contained — fonts are vendored under `assets/fonts/` (`styles.fonts.css`); the page loads with zero external requests.
 - Autosave pollutes `localStorage` while testing — clear `speedrungames:tower-wars:run_v2` between manual runs.
-- `IMPROVEMENT_PLAN.md` Tasks 1 (module split) and 2 (README path fix) are **done**; its line-number references to `game.js` are historical.
+- `IMPROVEMENT_PLAN.md` carries a per-task status sweep (2026-08-14) — read the header note there before picking up work; its line-number references to `game.js` are historical.
