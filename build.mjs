@@ -16,7 +16,7 @@ const EXCLUDE = new Set([
   "dist", "node_modules", ".git", ".github", ".claude",
   "package.json", "package-lock.json", "build.mjs",
   "game.manifest.json", "AGENTS.md", ".gitignore",
-  "test", "tools", // dev-only: golden tests + the split codemod
+  "test", "tools", "scripts", // dev-only: golden tests, the split codemod, CI smoke
 ]);
 
 if (existsSync(DIST)) rmSync(DIST, { recursive: true, force: true });

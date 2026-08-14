@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "smoke": "node scripts/smoke-boot.mjs"
   },
   "devDependencies": {
     "happy-dom": "^20.10.2",
+    "puppeteer": "^24.0.0",
     "vitest": "^4.1.8"
   }
 }
